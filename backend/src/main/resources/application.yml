@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: queueboard
+  datasource:
+    url: jdbc:h2:mem:queueboard;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # prototype only: schema from entities, in-memory DB
+    open-in-view: false        # keep persistence out of the web layer
+  h2:
+    console:
+      enabled: true            # dev convenience; not a production setting
+
+server:
+  port: 8080
+
+spring.task:
+  scheduling:
+    thread-name-prefix: job-scheduler-   # readable logs on the claim-loop tick thread
+
+# Simulated processing — tunable so failure paths are demonstrable and testable.
+queueboard:
+  processing:
+    enabled: true              # off-switch used by deterministic tests
+    poll-interval: 1s          # how often the worker claims PENDING jobs
+    min-duration: 2s           # simulated work duration range
+    max-duration: 6s
+    max-attempts: 3            # retry rule: FAILED → PENDING allowed below this
+    worker-concurrency: 2      # bounded executor; the claim loop never exceeds it
+    # Deterministic failure triggers (ADR-0004) — matched as substrings of the payload:
+    fail-marker: fail          # payload containing this fails on EVERY attempt
+    flaky-marker: flaky        # payload containing this fails only on the FIRST attempt,
+                               # so a retry demonstrably recovers (checked before fail-marker)

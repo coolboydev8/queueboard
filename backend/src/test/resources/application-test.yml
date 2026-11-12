@@ -1,0 +1,14 @@
+# Test profile: deterministic, fast simulation (no multi-second sleeps in tests).
+spring:
+  datasource:
+    # Unique database per Spring test context: the suite caches a worker-enabled and a
+    # worker-disabled context side by side — sharing one H2 instance would let the
+    # enabled context's worker steal the disabled context's PENDING jobs.
+    url: jdbc:h2:mem:queueboard-${random.uuid};DB_CLOSE_DELAY=-1
+
+queueboard:
+  processing:
+    poll-interval: 50ms
+    min-duration: 10ms
+    max-duration: 20ms
+    max-attempts: 3
