@@ -1,0 +1,178 @@
+openapi: 3.1.0
+info:
+  title: QueueBoard API
+  version: 1.0.0
+  description: >
+    Contract-first REST API for submitting and monitoring background jobs.
+    This document is the agreed interface between backend and frontend;
+    changes here are reviewed before implementation. Errors use RFC 9457
+    Problem Details (application/problem+json).
+
+servers:
+  - url: /api
+
+paths:
+  /jobs:
+    post:
+      operationId: createJob
+      summary: Submit a new job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Job accepted; starts in PENDING.
+          headers:
+            Location:
+              schema: { type: string }
+              description: URL of the created job.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Job' }
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+    get:
+      operationId: listJobs
+      summary: List jobs with their current states
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/JobStatus' }
+          description: Optional filter by lifecycle state.
+      responses:
+        '200':
+          description: Jobs, newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Job' }
+
+  /jobs/{id}:
+    get:
+      operationId: getJob
+      summary: Inspect a single job (details, timestamps, error info)
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Job' }
+          description: The job.
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+
+  /jobs/{id}/retry:
+    post:
+      operationId: retryJob
+      summary: Retry a failed job (idempotent)
+      description: >
+        Allowed only from FAILED and within the retry rules (see design note).
+        Re-sending the request for a job already re-queued does not double-queue it.
+      parameters:
+        - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: Job re-queued; returns the job back in PENDING.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Job' }
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+        '409':
+          description: Retry not permitted from the job's current state / rules.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/ProblemDetail' }
+
+components:
+  parameters:
+    JobId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    ValidationProblem:
+      description: Invalid input; field-level errors included.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetail' }
+    NotFoundProblem:
+      description: No job with that id.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetail' }
+
+  schemas:
+    JobStatus:
+      type: string
+      enum: [PENDING, PROCESSING, SUCCEEDED, FAILED]
+      description: >
+        Lifecycle: PENDING → PROCESSING → SUCCEEDED | FAILED; FAILED → PENDING via retry.
+        Clients must treat unrecognized values as "unknown", never as success.
+
+    CreateJobRequest:
+      type: object
+      required: [name, type]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        type:
+          type: string
+          maxLength: 100
+          description: >
+            Free-form job type identifier (e.g. "echo", "report"). Not a closed
+            enum — the prototype treats the type as an open label.
+        payload:
+          type: string
+          maxLength: 10000
+          description: Opaque payload; the simulator may key behavior off it.
+
+    Job:
+      type: object
+      required: [id, name, type, status, attempts, createdAt, version]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        type: { type: string }
+        payload: { type: string }
+        status: { $ref: '#/components/schemas/JobStatus' }
+        attempts:
+          type: integer
+          description: Number of processing attempts so far.
+        errorMessage:
+          type: [string, 'null']
+          description: Present when the last attempt failed.
+        createdAt: { type: string, format: date-time }
+        startedAt: { type: [string, 'null'], format: date-time }
+        completedAt: { type: [string, 'null'], format: date-time }
+        version:
+          type: integer
+          description: Optimistic-locking version.
+
+    ProblemDetail:
+      type: object
+      description: RFC 9457 Problem Details.
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+        errors:
+          type: array
+          description: Field-level validation errors (400 only).
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              message: { type: string }
