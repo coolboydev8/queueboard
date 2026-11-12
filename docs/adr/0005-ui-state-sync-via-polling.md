@@ -1,7 +1,7 @@
 # ADR-0005: UI state synchronization via polling (not SSE/WebSocket)
 
 - Status: Accepted
-- Date: 2026-11-09
+- Date: 2026-11-12
 
 ## Context
 

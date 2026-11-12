@@ -1,7 +1,7 @@
 # ADR-0003: Job lifecycle as an explicit state machine owned by the domain
 
 - Status: Accepted
-- Date: 2026-11-09
+- Date: 2026-11-12
 
 ## Context
 

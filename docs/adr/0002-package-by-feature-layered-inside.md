@@ -1,7 +1,7 @@
 # ADR-0002: Package by feature, with controller → service → repository layering inside
 
 - Status: Accepted
-- Date: 2026-11-09
+- Date: 2026-11-12
 
 ## Context
 

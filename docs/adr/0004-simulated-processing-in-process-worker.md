@@ -1,7 +1,7 @@
 # ADR-0004: Simulated processing via an in-process async worker
 
 - Status: Accepted
-- Date: 2026-11-09
+- Date: 2026-11-12
 
 ## Context
 
