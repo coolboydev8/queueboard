@@ -1,0 +1,5 @@
+@if (iso(); as iso) {
+  <time [attr.datetime]="iso">{{ formatted() }}</time>
+} @else {
+  <span>{{ formatted() }}</span>
+}

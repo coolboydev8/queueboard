@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.shell__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raised);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: inherit;
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.brand__mark {
+  width: 1.05rem;
+  height: 0.85rem;
+  background:
+    linear-gradient(var(--teal), var(--teal)) 0 0 / 100% 2px no-repeat,
+    linear-gradient(var(--teal), var(--teal)) 0 50% / 72% 2px no-repeat,
+    linear-gradient(var(--teal), var(--teal)) 0 100% / 44% 2px no-repeat;
+}
+
+.brand__tag {
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+main:focus {
+  outline: none;
+}

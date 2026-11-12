@@ -1,0 +1,37 @@
+.banner {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+}
+
+.banner__title {
+  font-weight: 700;
+}
+
+.banner__message {
+  margin-top: 0.2rem;
+  color: var(--ink-soft);
+}
+
+.banner[data-tone='error'] {
+  border-color: #e4c0bb;
+  background: var(--failed-bg);
+}
+
+.banner[data-tone='error'] .banner__title {
+  color: var(--failed-fg);
+}
+
+.banner[data-tone='warning'] {
+  border-color: #ead7b0;
+  background: var(--pending-bg);
+}
+
+.banner[data-tone='warning'] .banner__title {
+  color: var(--pending-fg);
+}
+
+.banner[data-tone='info'] .banner__title {
+  color: var(--processing-fg);
+}

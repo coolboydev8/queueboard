@@ -1,0 +1,89 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.12rem 0.55rem 0.12rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge__mark {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+:host([data-status='PENDING']) {
+  color: var(--pending-fg);
+  background: var(--pending-bg);
+}
+
+:host([data-status='PENDING']) .badge__mark {
+  background: transparent;
+  border: 2px solid currentColor;
+}
+
+:host([data-status='PROCESSING']) {
+  color: var(--processing-fg);
+  background: var(--processing-bg);
+}
+
+:host([data-status='PROCESSING']) .badge__mark {
+  animation: badge-pulse 1.2s ease-in-out infinite;
+}
+
+:host([data-status='SUCCEEDED']) {
+  color: var(--succeeded-fg);
+  background: var(--succeeded-bg);
+}
+
+:host([data-status='SUCCEEDED']) .badge__mark {
+  border-radius: 1px;
+}
+
+:host([data-status='FAILED']) {
+  color: var(--failed-fg);
+  background: var(--failed-bg);
+}
+
+:host([data-status='FAILED']) .badge__mark {
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+:host([data-status='UNKNOWN']) {
+  color: var(--unknown-fg);
+  background: var(--unknown-bg);
+  border-color: var(--unknown-fg);
+  border-style: dashed;
+}
+
+:host([data-status='UNKNOWN']) .badge__mark {
+  background: transparent;
+  border: 2px dashed currentColor;
+  border-radius: 1px;
+}
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.65);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([data-status='PROCESSING']) .badge__mark {
+    animation: none;
+  }
+}

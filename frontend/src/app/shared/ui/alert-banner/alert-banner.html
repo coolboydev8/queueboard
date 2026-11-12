@@ -1,0 +1,6 @@
+<div class="banner" [attr.data-tone]="tone()" [attr.role]="tone() === 'error' ? 'alert' : 'status'">
+  <p class="banner__title">{{ heading() }}</p>
+  @if (message()) {
+    <p class="banner__message">{{ message() }}</p>
+  }
+</div>

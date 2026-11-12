@@ -1,0 +1,9 @@
+.back {
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}

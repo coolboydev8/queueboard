@@ -1,0 +1,102 @@
+<section class="page">
+  <p class="sr-only" aria-live="polite">{{ liveMessage() }}</p>
+  <a class="back" routerLink="/jobs">Back to jobs</a>
+
+  @if (store.detailStale()) {
+    <qb-alert-banner
+      tone="warning"
+      heading="Couldn't refresh"
+      message="Showing the last job received. The latest refresh failed."
+    />
+  }
+
+  @if (store.detailPhase() === 'loading' || store.detailPhase() === 'idle') {
+    <qb-progress-indicator label="Loading job" />
+  } @else if (store.detailPhase() === 'missing') {
+    <qb-empty-state
+      title="Job not found"
+      message="No job with that id exists. It may have been removed, or the link is wrong."
+    >
+      <a class="button" routerLink="/jobs">Back to jobs</a>
+    </qb-empty-state>
+  } @else if (store.detailPhase() === 'error') {
+    @if (store.detailError(); as error) {
+      <qb-alert-banner tone="error" [heading]="error.title" [message]="error.detail" />
+    }
+    <button type="button" class="button" (click)="store.reloadDetail()">Try again</button>
+  } @else if (store.selected(); as job) {
+    <header class="detail-title">
+      <div>
+        <h1>{{ job.name }}</h1>
+        <p class="lede">{{ job.type }}</p>
+      </div>
+      <qb-job-status-badge [status]="job.status" />
+    </header>
+
+    <qb-lifecycle-track [status]="job.status" />
+
+    <div class="detail-grid">
+      <section class="panel detail-card" aria-labelledby="job-facts">
+        <h2 id="job-facts">Details</h2>
+        <dl class="meta">
+          <dt>Attempts</dt>
+          <dd>{{ job.attempts }}</dd>
+          <dt>Version</dt>
+          <dd [attr.title]="'Server version ' + job.version">{{ job.version }}</dd>
+          <dt>Created</dt>
+          <dd><qb-timestamp [value]="job.createdAt" /></dd>
+          <dt>Started</dt>
+          <dd>
+            @if (job.startedAt) {
+              <qb-timestamp [value]="job.startedAt" />
+            } @else {
+              —
+            }
+          </dd>
+          <dt>Completed</dt>
+          <dd>
+            @if (job.completedAt) {
+              <qb-timestamp [value]="job.completedAt" />
+            } @else {
+              —
+            }
+          </dd>
+        </dl>
+      </section>
+
+      <div class="detail-side">
+        @if (job.errorMessage) {
+          <section class="error-panel" aria-label="Error information">
+            <h2>Error</h2>
+            <p>{{ job.errorMessage }}</p>
+          </section>
+        }
+
+        @if (job.rawStatus !== job.status) {
+          <qb-alert-banner
+            tone="warning"
+            heading="Unknown status"
+            [message]="'The server sent “' + job.rawStatus + '”, which this board does not treat as success.'"
+          />
+        }
+
+        <qb-retry-button [status]="job.status" [pending]="store.retrying()" (retried)="onRetry()" />
+
+        @if (store.retryError(); as error) {
+          <qb-alert-banner tone="error" [heading]="error.title" [message]="error.detail" />
+        }
+      </div>
+    </div>
+
+    @if (job.payload) {
+      <section class="panel detail-card" aria-labelledby="job-payload">
+        <h2 id="job-payload">Payload</h2>
+        @defer (on idle) {
+          <pre class="payload">{{ job.payload }}</pre>
+        } @placeholder {
+          <p class="lede">Loading payload…</p>
+        }
+      </section>
+    }
+  }
+</section>

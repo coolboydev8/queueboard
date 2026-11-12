@@ -1,0 +1,19 @@
+<section class="page">
+  <a class="back" routerLink="/jobs">Back to jobs</a>
+  <header class="page-header">
+    <div>
+      <h1>New job</h1>
+      <p class="lede">Name, type, and an optional payload. Processing stays on the server.</p>
+    </div>
+  </header>
+
+  @if (store.createError(); as error) {
+    <qb-alert-banner tone="error" [heading]="error.title" [message]="error.detail" />
+  }
+
+  <qb-job-form
+    [submitting]="store.creating()"
+    [serverError]="store.createError()"
+    (submitted)="onSubmit($event)"
+  />
+</section>

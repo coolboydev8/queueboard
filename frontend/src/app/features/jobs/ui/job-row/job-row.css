@@ -1,0 +1,44 @@
+:host {
+  position: relative;
+}
+
+:host:hover {
+  background: #faf6ef;
+}
+
+:host:last-child th,
+:host:last-child td {
+  border-bottom: 0;
+}
+
+th,
+td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 500;
+}
+
+.row-link {
+  color: inherit;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.row-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.row-type {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

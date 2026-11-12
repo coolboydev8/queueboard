@@ -1,0 +1,14 @@
+@if (status() === 'FAILED') {
+  <div class="retry">
+    <p id="retry-hint">The server decides whether this job can be queued again.</p>
+    <button
+      type="button"
+      class="button"
+      aria-describedby="retry-hint"
+      [disabled]="pending()"
+      (click)="retried.emit()"
+    >
+      {{ pending() ? 'Retrying…' : 'Retry job' }}
+    </button>
+  </div>
+}

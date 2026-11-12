@@ -1,0 +1,16 @@
+@if (steps(); as steps) {
+  <ol class="track" aria-label="Job progress" [attr.data-status]="status()">
+    @for (step of steps; track step.id) {
+      <li
+        class="track__step"
+        [attr.data-state]="step.state"
+        [attr.aria-current]="step.state === 'current' ? 'step' : null"
+      >
+        <span class="track__dot" aria-hidden="true"></span>
+        <span>{{ step.label }}</span>
+      </li>
+    }
+  </ol>
+} @else {
+  <p class="track-unknown">The server reported a status this board does not recognize.</p>
+}

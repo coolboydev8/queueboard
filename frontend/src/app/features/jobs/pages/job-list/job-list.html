@@ -1,0 +1,58 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Jobs</h1>
+      <p class="lede">Submit a job and watch it move from pending to a final result.</p>
+    </div>
+    <a class="button" routerLink="new">New job</a>
+  </header>
+
+  <qb-job-status-filter [value]="store.statusFilter()" (changed)="onFilter($event)" />
+
+  @if (store.listStale()) {
+    <qb-alert-banner tone="warning" heading="Couldn't refresh" [message]="staleMessage()" />
+  }
+
+  @if (store.listPhase() === 'loading' || store.listPhase() === 'idle') {
+    <qb-progress-indicator label="Loading jobs" />
+  } @else if (store.listPhase() === 'error') {
+    @if (store.listError(); as error) {
+      <qb-alert-banner tone="error" [heading]="error.title" [message]="error.detail" />
+    }
+    <button type="button" class="button" (click)="store.reloadList()">Try again</button>
+  } @else if (store.jobs(); as jobs) {
+    @if (store.listRefreshing()) {
+      <p class="meta-line"><span class="refresh-dot" aria-hidden="true"></span> Refreshing</p>
+    } @else if (!store.listStale() && loadedAtIso(); as updated) {
+      <p class="meta-line">Updated <qb-timestamp [value]="updated" /></p>
+    }
+
+    @if (jobs.length === 0) {
+      <qb-empty-state [title]="emptyTitle()" [message]="emptyMessage()">
+        <a class="button" routerLink="new">Submit a job</a>
+      </qb-empty-state>
+    } @else {
+      <div class="table-wrap panel">
+        <table class="board">
+          <caption class="sr-only">Background jobs</caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Created</th>
+              <th scope="col" class="num">Attempts</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (job of jobs; track job.id) {
+              <tr qbJobRow [job]="job"></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  } @else {
+    <qb-progress-indicator label="Loading jobs" />
+  }
+</section>

@@ -1,0 +1,65 @@
+<form [formGroup]="form" novalidate (ngSubmit)="submit()">
+  <fieldset class="fields" [disabled]="submitting()">
+    <div class="field">
+      <div class="field__label">
+        <label for="job-name">Name</label>
+        <span class="field__count">{{ nameLength() }} / 100</span>
+      </div>
+      <input
+        id="job-name"
+        type="text"
+        formControlName="name"
+        autocomplete="off"
+        [attr.aria-invalid]="errorFor('name') ? 'true' : 'false'"
+        [attr.aria-describedby]="describedBy('name')"
+      />
+      <p id="job-name-hint" class="field__hint">Shown on the board.</p>
+      @if (errorFor('name'); as message) {
+        <p id="job-name-error" class="field__error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="job-type">Type</label>
+      <input
+        id="job-type"
+        type="text"
+        formControlName="type"
+        autocomplete="off"
+        [attr.aria-invalid]="errorFor('type') ? 'true' : 'false'"
+        [attr.aria-describedby]="describedBy('type')"
+      />
+      <p id="job-type-hint" class="field__hint">An identifier the server validates.</p>
+      <div class="suggestions" role="group" aria-label="Example types">
+        @for (example of typeExamples; track example) {
+          <button type="button" class="suggestion" (click)="useType(example)">{{ example }}</button>
+        }
+      </div>
+      @if (errorFor('type'); as message) {
+        <p id="job-type-error" class="field__error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <div class="field__label">
+        <label for="job-payload">Payload</label>
+        <span class="field__count">{{ payloadLength() }} / 10,000</span>
+      </div>
+      <textarea
+        id="job-payload"
+        formControlName="payload"
+        rows="6"
+        [attr.aria-invalid]="errorFor('payload') ? 'true' : 'false'"
+        [attr.aria-describedby]="describedBy('payload')"
+      ></textarea>
+      <p id="job-payload-hint" class="field__hint">Optional. The server treats this as opaque text.</p>
+      @if (errorFor('payload'); as message) {
+        <p id="job-payload-error" class="field__error">{{ message }}</p>
+      }
+    </div>
+  </fieldset>
+
+  <button type="submit" class="button" [disabled]="submitting()">
+    {{ submitting() ? 'Submitting…' : 'Submit job' }}
+  </button>
+</form>

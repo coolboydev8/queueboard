@@ -1,0 +1,10 @@
+<th scope="row">
+  <a class="row-link" [routerLink]="['/jobs', job().id]">
+    {{ job().name }}
+    <span class="sr-only">, {{ statusLabel() }}</span>
+  </a>
+</th>
+<td class="row-type">{{ job().type }}</td>
+<td><qb-job-status-badge [status]="job().status" /></td>
+<td><qb-timestamp [value]="job().createdAt" /></td>
+<td class="num">{{ job().attempts }}</td>
